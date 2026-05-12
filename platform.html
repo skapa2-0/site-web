@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Product Platform — by SKAPA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #4E56EC;
+  --primary-dark: #3C44D4;
+  --primary-light: #EEF0FD;
+  --primary-muted: #6C72E0;
+  --sidebar: #13131F;
+  --nav-active: #2A2D52;
+  --indigo: #6C72E0;
+  /* LIGHT THEME — inversé de buildos */
+  --bg: #F7F7FB;
+  --bg2: #EEEEF8;
+  --surface: #FFFFFF;
+  --surface2: #EEF0FD;
+  --white: #0D0D1A;
+  --text: #0D0D1A;
+  --text-sec: #6060808;
+  --border: rgba(78,86,236,0.15);
+  --green: #16A34A;
+  --orange: #EA580C;
+  --font-display: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  /* explicit light values */
+  --bg-nav: rgba(247,247,251,0.92);
+  --text-secondary: #606080;
+  --shadow: rgba(78,86,236,0.08);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--font-body); background: var(--bg); color: var(--text); overflow-x: hidden; cursor: none; }
+
+.cursor { width:12px; height:12px; background:var(--primary); border-radius:50%; position:fixed; top:0; left:0; pointer-events:none; z-index:9999; transform:translate(-50%,-50%); transition:transform 0.1s,width 0.2s,height 0.2s; }
+.cursor-ring { width:36px; height:36px; border:1px solid rgba(78,86,236,0.3); border-radius:50%; position:fixed; top:0; left:0; pointer-events:none; z-index:9998; transform:translate(-50%,-50%); transition:transform 0.15s ease-out; }
+
+/* Lang toggle */
+.lang-toggle { position:fixed; top:24px; right:24px; z-index:1000; display:flex; gap:2px; background:var(--surface); border:1px solid var(--border); border-radius:8px; overflow:hidden; box-shadow:0 2px 12px var(--shadow); }
+.lang-btn { padding:6px 14px; font-family:var(--font-body); font-size:12px; font-weight:500; color:#606080; background:transparent; border:none; cursor:pointer; transition:all 0.2s; }
+.lang-btn.active { background:var(--primary); color:#FFFFFF; }
+
+/* Nav */
+nav { position:fixed; top:0; left:0; right:0; z-index:900; padding:0 48px; height:64px; display:flex; align-items:center; justify-content:space-between; background:var(--bg-nav); backdrop-filter:blur(20px); border-bottom:1px solid transparent; transition:border-color 0.3s; }
+nav.scrolled { border-bottom-color:var(--border); box-shadow:0 2px 24px var(--shadow); }
+.nav-logo { display:flex; align-items:center; gap:10px; text-decoration:none; }
+.nav-product { font-family:var(--font-display); font-size:15px; font-weight:700; color:var(--primary); }
+.nav-back { font-size:13px; color:#606080; text-decoration:none; display:flex; align-items:center; gap:6px; transition:color 0.2s; }
+.nav-back:hover { color:var(--text); }
+.nav-cta { background:var(--primary); color:#FFFFFF; padding:10px 24px; border-radius:100px; font-family:var(--font-body); font-size:13px; font-weight:500; text-decoration:none; transition:all 0.2s; }
+.nav-cta:hover { background:var(--primary-dark); transform:translateY(-1px); }
+.nav-right { display:flex; align-items:center; gap:20px; }
+
+/* Sections */
+section { padding:120px 80px; position:relative; overflow:hidden; }
+
+/* ── HERO ── */
+#hero { min-height:100vh; display:flex; flex-direction:column; justify-content:center; padding:0 80px; background:var(--bg); }
+.hero-ambient { position:absolute; top:-20%; right:-10%; width:60vw; height:60vw; background:radial-gradient(ellipse,rgba(78,86,236,0.07) 0%,transparent 70%); pointer-events:none; }
+.hero-ambient2 { position:absolute; bottom:-10%; left:-5%; width:40vw; height:40vw; background:radial-gradient(ellipse,rgba(108,114,224,0.05) 0%,transparent 70%); pointer-events:none; }
+.hero-grid { position:absolute; inset:0; pointer-events:none; background-image:linear-gradient(rgba(78,86,236,0.06) 1px,transparent 1px),linear-gradient(90deg,rgba(78,86,236,0.06) 1px,transparent 1px); background-size:80px 80px; mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black,transparent); }
+
+.hero-eyebrow { font-size:11px; font-weight:500; letter-spacing:2.5px; text-transform:uppercase; color:var(--primary); margin-bottom:28px; opacity:0; animation:fadeUp 0.8s 0.2s forwards; }
+.hero-title { font-family:var(--font-display); font-size:clamp(40px,7vw,88px); font-weight:800; line-height:0.95; letter-spacing:-2px; color:var(--text); opacity:0; animation:fadeUp 0.8s 0.4s forwards; }
+.hero-title .accent { color:var(--primary); }
+.hero-sub1 { font-size:clamp(15px,1.8vw,19px); color:var(--primary); font-weight:500; margin-top:28px; opacity:0; animation:fadeUp 0.8s 0.6s forwards; }
+.hero-sub2 { font-size:clamp(13px,1.4vw,16px); color:#606080; font-weight:300; margin-top:12px; max-width:680px; line-height:1.7; opacity:0; animation:fadeUp 0.8s 0.7s forwards; }
+.hero-actions { display:flex; gap:16px; margin-top:48px; flex-wrap:wrap; opacity:0; animation:fadeUp 0.8s 0.9s forwards; }
+
+.btn-primary { background:var(--primary); color:#FFFFFF; padding:16px 36px; border-radius:100px; font-family:var(--font-body); font-size:15px; font-weight:500; text-decoration:none; transition:all 0.25s; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:8px; }
+.btn-primary:hover { background:var(--primary-dark); transform:translateY(-2px); box-shadow:0 12px 32px rgba(78,86,236,0.25); }
+.btn-secondary { background:#FFFFFF; color:#606080; padding:16px 36px; border-radius:100px; font-family:var(--font-body); font-size:15px; font-weight:400; text-decoration:none; transition:all 0.25s; border:1px solid var(--border); box-shadow:0 2px 8px var(--shadow); }
+.btn-secondary:hover { color:var(--primary); border-color:var(--primary); }
+
+/* Section labels */
+.section-label { font-size:10px; font-weight:600; letter-spacing:3px; text-transform:uppercase; color:var(--primary); margin-bottom:20px; }
+.section-title { font-family:var(--font-display); font-size:clamp(32px,4vw,52px); font-weight:700; line-height:1.1; color:var(--text); margin-bottom:64px; }
+
+/* Reveal */
+.reveal { opacity:0; transform:translateY(32px); transition:opacity 0.7s ease,transform 0.7s ease; }
+.reveal.visible { opacity:1; transform:translateY(0); }
+.reveal-delay-1 { transition-delay:0.1s; }
+.reveal-delay-2 { transition-delay:0.2s; }
+.reveal-delay-3 { transition-delay:0.3s; }
+
+@keyframes fadeUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
+@keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+
+/* ── VISION ── */
+#vision { background:var(--bg2); border-top:1px solid var(--border); }
+.vision-statement { font-family:var(--font-display); font-size:clamp(22px,3vw,38px); font-weight:700; line-height:1.3; color:var(--text); max-width:860px; margin-bottom:48px; }
+.vision-statement .accent { color:var(--primary); }
+.vision-pillars { display:grid; grid-template-columns:repeat(4,1fr); gap:2px; }
+.vision-pillar { background:var(--surface); padding:32px 28px; border:1px solid var(--border); transition:all 0.3s; position:relative; overflow:hidden; box-shadow:0 2px 8px var(--shadow); }
+.vision-pillar:hover { background:#FFFFFF; box-shadow:0 8px 24px var(--shadow); }
+.vision-pillar::after { content:''; position:absolute; bottom:0; left:0; right:0; height:2px; background:var(--pillar-color,var(--primary)); transform:scaleX(0); transform-origin:left; transition:transform 0.4s; }
+.vision-pillar:hover::after { transform:scaleX(1); }
+.pillar-verb { font-size:9px; font-weight:700; letter-spacing:2.5px; text-transform:uppercase; color:var(--pillar-color,var(--primary)); margin-bottom:12px; }
+.pillar-name { font-family:var(--font-display); font-size:18px; font-weight:700; color:var(--text); margin-bottom:10px; }
+.pillar-desc { font-size:13px; font-weight:300; color:#606080; line-height:1.6; }
+
+/* ── MODULES ── */
+#modules { background:var(--bg); }
+.modules-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:24px; }
+.module-card { border-radius:16px; overflow:hidden; border:1px solid var(--border); transition:transform 0.3s,border-color 0.3s,box-shadow 0.3s; position:relative; background:var(--surface); box-shadow:0 2px 12px var(--shadow); }
+.module-card:hover { transform:translateY(-4px); border-color:rgba(78,86,236,0.3); box-shadow:0 12px 32px var(--shadow); }
+.module-header { padding:32px 36px 28px; }
+.module-status { display:inline-flex; align-items:center; gap:6px; font-size:9px; font-weight:600; letter-spacing:2px; text-transform:uppercase; padding:4px 12px; border-radius:100px; margin-bottom:20px; }
+.status-beta { background:rgba(22,163,74,0.1); color:#16A34A; border:1px solid rgba(22,163,74,0.25); }
+.status-dev { background:rgba(234,88,12,0.1); color:#EA580C; border:1px solid rgba(234,88,12,0.25); }
+.status-dot { width:6px; height:6px; border-radius:50%; }
+.status-beta .status-dot { background:#16A34A; box-shadow:0 0 6px rgba(22,163,74,0.5); }
+.status-dev .status-dot { background:#EA580C; box-shadow:0 0 6px rgba(234,88,12,0.5); animation:pulse 2s infinite; }
+.module-role { font-size:9px; font-weight:700; letter-spacing:2.5px; text-transform:uppercase; margin-bottom:8px; }
+.module-name { font-family:var(--font-display); font-size:26px; font-weight:800; color:var(--text); margin-bottom:16px; }
+.module-desc { font-size:14px; font-weight:300; color:#606080; line-height:1.7; margin-bottom:28px; }
+.module-features { list-style:none; display:flex; flex-direction:column; gap:10px; }
+.module-features li { display:flex; align-items:flex-start; gap:10px; font-size:13px; color:#606080; line-height:1.5; font-weight:300; }
+.module-features li::before { content:''; width:4px; height:4px; border-radius:50%; margin-top:8px; flex-shrink:0; }
+.module-footer { padding:20px 36px; border-top:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; background:var(--bg2); }
+.module-link { font-size:13px; font-weight:500; color:var(--primary); text-decoration:none; transition:gap 0.2s; display:flex; align-items:center; gap:6px; }
+.module-link:hover { gap:10px; }
+
+/* Module colors — light */
+.module-card.build { border-left:4px solid #4E56EC; }
+.module-card.build .module-role { color:#4E56EC; }
+.module-card.build .module-features li::before { background:#4E56EC; }
+.module-card.project { border-left:4px solid #6C72E0; }
+.module-card.project .module-role { color:#6C72E0; }
+.module-card.project .module-features li::before { background:#6C72E0; }
+.module-card.health { border-left:4px solid #3C44D4; }
+.module-card.health .module-role { color:#3C44D4; }
+.module-card.health .module-features li::before { background:#3C44D4; }
+.module-card.personae { border-left:4px solid #EA580C; }
+.module-card.personae .module-role { color:#EA580C; }
+.module-card.personae .module-features li::before { background:#EA580C; }
+
+/* ── LOOP ── */
+#loop { background:var(--bg2); border-top:1px solid var(--border); }
+.loop-diagram { display:flex; align-items:center; justify-content:center; gap:0; flex-wrap:wrap; margin:0 auto; max-width:900px; }
+.loop-step { display:flex; flex-direction:column; align-items:center; gap:12px; padding:24px 20px; }
+.loop-icon { width:56px; height:56px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:22px; border:1px solid var(--border); background:var(--surface); box-shadow:0 2px 8px var(--shadow); }
+.loop-step-name { font-family:var(--font-display); font-size:13px; font-weight:700; color:var(--text); text-align:center; }
+.loop-step-sub { font-size:11px; font-weight:300; color:#606080; text-align:center; max-width:100px; line-height:1.4; }
+.loop-arrow { font-size:20px; color:var(--border); padding:0 4px; align-self:center; margin-top:-24px; color:#C0C0D8; }
+
+/* ── ATLASSIAN ── */
+#atlassian { background:var(--bg); }
+.atlassian-inner { display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center; }
+.atlassian-visual { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:36px; box-shadow:0 4px 24px var(--shadow); }
+.atlassian-visual-title { font-family:var(--font-display); font-size:14px; font-weight:600; color:var(--text); margin-bottom:24px; display:flex; align-items:center; gap:10px; }
+.atlassian-visual-title span { font-size:18px; }
+.release-items { display:flex; flex-direction:column; gap:10px; }
+.release-item { background:var(--bg2); border:1px solid var(--border); border-radius:8px; padding:14px 16px; display:flex; align-items:center; gap:12px; }
+.release-item-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.release-item-text { font-size:13px; font-weight:400; color:var(--text); flex:1; }
+.release-item-tag { font-size:9px; font-weight:600; letter-spacing:1px; text-transform:uppercase; padding:3px 8px; border-radius:4px; }
+.tag-ai { background:rgba(78,86,236,0.1); color:#4E56EC; }
+.tag-user { background:rgba(22,163,74,0.1); color:#16A34A; }
+.tag-planned { background:rgba(108,114,224,0.1); color:#6C72E0; }
+
+/* ── ROADMAP ── */
+#roadmap { background:var(--bg2); border-top:1px solid var(--border); }
+.roadmap-items { display:flex; flex-direction:column; gap:2px; }
+.roadmap-item { display:flex; align-items:stretch; gap:0; }
+.roadmap-phase { background:var(--primary); padding:18px 24px; min-width:120px; display:flex; align-items:center; justify-content:center; }
+.roadmap-phase-label { font-size:9px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:#FFFFFF; text-align:center; }
+.roadmap-content { background:var(--surface); border:1px solid var(--border); padding:20px 28px; flex:1; display:flex; align-items:center; gap:32px; transition:background 0.3s; box-shadow:0 1px 4px var(--shadow); }
+.roadmap-content:hover { background:#FFFFFF; }
+.roadmap-title { font-family:var(--font-display); font-size:15px; font-weight:700; color:var(--text); min-width:220px; }
+.roadmap-desc { font-size:13px; font-weight:300; color:#606080; line-height:1.6; flex:1; }
+.roadmap-status { font-size:9px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; padding:4px 12px; border-radius:100px; white-space:nowrap; }
+.rs-now { background:rgba(22,163,74,0.1); color:#16A34A; border:1px solid rgba(22,163,74,0.25); }
+.rs-dev { background:rgba(234,88,12,0.1); color:#EA580C; border:1px solid rgba(234,88,12,0.25); }
+.rs-next { background:rgba(78,86,236,0.1); color:#4E56EC; border:1px solid rgba(78,86,236,0.2); }
+
+/* ── ACCESS ── */
+#access { background:var(--bg); }
+.access-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:2px; margin-top:0; }
+.access-card { background:var(--surface); border:1px solid var(--border); padding:36px; transition:all 0.3s; box-shadow:0 1px 4px var(--shadow); }
+.access-card.featured { background:var(--primary-light); border-color:rgba(78,86,236,0.3); }
+.access-card:hover { box-shadow:0 8px 24px var(--shadow); }
+.access-num { font-size:9px; font-weight:700; letter-spacing:2.5px; text-transform:uppercase; color:var(--primary); margin-bottom:16px; }
+.access-name { font-family:var(--font-display); font-size:20px; font-weight:700; color:var(--text); margin-bottom:10px; }
+.access-desc { font-size:13px; font-weight:300; color:#606080; line-height:1.6; margin-bottom:24px; }
+.access-features { list-style:none; display:flex; flex-direction:column; gap:9px; }
+.access-features li { font-size:13px; color:var(--text); font-weight:300; display:flex; align-items:flex-start; gap:8px; line-height:1.5; }
+.access-features li::before { content:'→'; color:var(--primary); font-size:12px; margin-top:1px; flex-shrink:0; }
+
+/* ── CTA ── */
+#cta { background:var(--primary); text-align:center; padding:160px 80px; position:relative; overflow:hidden; }
+.cta-ambient { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:600px; height:600px; background:radial-gradient(ellipse,rgba(255,255,255,0.08) 0%,transparent 70%); pointer-events:none; }
+.cta-eyebrow { font-size:10px; font-weight:600; letter-spacing:3px; text-transform:uppercase; color:rgba(255,255,255,0.6); margin-bottom:24px; }
+.cta-title { font-family:var(--font-display); font-size:clamp(36px,5vw,64px); font-weight:800; line-height:1.05; color:#FFFFFF; margin-bottom:24px; letter-spacing:-2px; }
+.cta-title .accent { color:rgba(255,255,255,0.75); }
+.cta-sub { font-size:17px; font-weight:300; color:rgba(255,255,255,0.75); max-width:520px; margin:0 auto 48px; line-height:1.6; }
+.cta-actions { display:flex; gap:16px; justify-content:center; flex-wrap:wrap; }
+#cta .btn-primary { background:#FFFFFF; color:var(--primary); }
+#cta .btn-primary:hover { background:#EEF0FD; box-shadow:0 12px 32px rgba(0,0,0,0.15); }
+#cta .btn-secondary { border-color:rgba(255,255,255,0.4); color:rgba(255,255,255,0.8); }
+#cta .btn-secondary:hover { color:#FFFFFF; border-color:#FFFFFF; }
+
+/* Footer */
+footer { padding:40px 80px; border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; font-size:12px; color:#606080; background:var(--bg); }
+
+/* Animations */
+@keyframes fadeUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
+@keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+
+/* Lang */
+.en { display:none; }
+body.lang-en .fr { display:none; }
+body.lang-en .en { display:block; }
+.en-inline { display:none; }
+.fr-inline { display:inline; }
+body.lang-en .fr-inline { display:none; }
+body.lang-en .en-inline { display:inline; }
+
+@media (max-width:900px) {
+  section { padding:80px 32px; }
+  #hero { padding:100px 32px 60px; }
+  nav { padding:0 24px; }
+  .vision-pillars { grid-template-columns:1fr 1fr; }
+  .modules-grid { grid-template-columns:1fr; }
+  .atlassian-inner { grid-template-columns:1fr; }
+  .access-grid { grid-template-columns:1fr; }
+  .loop-diagram { gap:0; }
+  .loop-arrow { display:none; }
+  footer { flex-direction:column; gap:16px; text-align:center; }
+  .roadmap-content { flex-direction:column; align-items:flex-start; gap:12px; }
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<div class="lang-toggle">
+  <button class="lang-btn active" onclick="setLang('fr')" id="btn-fr">FR</button>
+  <button class="lang-btn" onclick="setLang('en')" id="btn-en">EN</button>
+</div>
+
+<nav id="nav">
+  <div class="nav-logo">
+    <span class="nav-product">AI Product Platform</span>
+    <span style="color:var(--text-sec);font-size:13px;font-weight:300"> · by SKAPA</span>
+  </div>
+  <div class="nav-right">
+    <a class="nav-back" href="buildos.html">
+      <span class="fr-inline">← Build OS</span>
+      <span class="en-inline" style="display:none">← Build OS</span>
+    </a>
+    <a class="nav-cta" href="#cta">
+      <span class="fr-inline">Rejoindre la Beta</span>
+      <span class="en-inline" style="display:none">Join the Beta</span>
+    </a>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section id="hero">
+  <div class="hero-ambient"></div>
+  <div class="hero-ambient2"></div>
+  <div class="hero-grid"></div>
+
+  <p class="hero-eyebrow fr">SKAPA · AI Product Platform</p>
+  <p class="hero-eyebrow en">SKAPA · AI Product Platform</p>
+
+  <h1 class="hero-title fr">Le cycle produit<br>entier.<br><span class="accent">Dans un seul système.</span></h1>
+  <h1 class="hero-title en" style="display:none">The entire product<br>cycle.<br><span class="accent">In one system.</span></h1>
+
+  <p class="hero-sub1 fr">De la conception au feedback utilisateur — connecté à votre release planning.</p>
+  <p class="hero-sub1 en" style="display:none">From conception to user feedback — connected to your release planning.</p>
+
+  <p class="hero-sub2 fr">Quatre modules opérationnels. Un cycle continu. Une plateforme qui construit, comprend, audite et apprend — sans rupture entre les équipes.</p>
+  <p class="hero-sub2 en" style="display:none">Four operational modules. A continuous cycle. A platform that builds, understands, audits and learns — without gaps between teams.</p>
+
+  <div class="hero-actions">
+    <a class="btn-primary" href="buildos.html">
+      <span class="fr-inline">Découvrir Build OS →</span>
+      <span class="en-inline" style="display:none">Discover Build OS →</span>
+    </a>
+    <a class="btn-secondary" href="#modules">
+      <span class="fr-inline">Les 4 modules</span>
+      <span class="en-inline" style="display:none">The 4 modules</span>
+    </a>
+  </div>
+</section>
+
+<!-- ── VISION ── -->
+<section id="vision">
+  <p class="section-label reveal fr">Vision</p>
+  <p class="section-label reveal en" style="display:none">Vision</p>
+
+  <p class="vision-statement reveal fr">
+    L'AI Product Platform by SKAPA est le premier système qui couvre <span class="accent">l'intégralité du cycle produit</span> — de la conception au feedback utilisateur, connecté au release planning Atlassian.
+  </p>
+  <p class="vision-statement reveal en" style="display:none">
+    The AI Product Platform by SKAPA is the first system covering <span class="accent">the entire product cycle</span> — from conception to user feedback, connected to Atlassian release planning.
+  </p>
+
+  <div class="vision-pillars">
+    <div class="vision-pillar reveal" style="--pillar-color:#4E56EC">
+      <div class="pillar-verb fr">Construire</div>
+      <div class="pillar-verb en" style="display:none">Build</div>
+      <div class="pillar-name">Build OS</div>
+      <div class="pillar-desc fr">Full stack, dans vos contraintes, déployé en production.</div>
+      <div class="pillar-desc en" style="display:none">Full stack, in your constraints, shipped to production.</div>
+    </div>
+    <div class="vision-pillar reveal reveal-delay-1" style="--pillar-color:#A0A6F8">
+      <div class="pillar-verb fr">Comprendre</div>
+      <div class="pillar-verb en" style="display:none">Understand</div>
+      <div class="pillar-name">Project OS</div>
+      <div class="pillar-desc fr">Communication avec le produit, compréhension des choix.</div>
+      <div class="pillar-desc en" style="display:none">Communication with the product, understanding decisions.</div>
+    </div>
+    <div class="vision-pillar reveal reveal-delay-2" style="--pillar-color:#6C72E0">
+      <div class="pillar-verb fr">Auditer</div>
+      <div class="pillar-verb en" style="display:none">Audit</div>
+      <div class="pillar-name">Health Care Product</div>
+      <div class="pillar-desc fr">UX, accessibilité, éco-conception — qualité mesurée en continu.</div>
+      <div class="pillar-desc en" style="display:none">UX, accessibility, eco-design — quality measured continuously.</div>
+    </div>
+    <div class="vision-pillar reveal reveal-delay-3" style="--pillar-color:#FB923C">
+      <div class="pillar-verb fr">Apprendre</div>
+      <div class="pillar-verb en" style="display:none">Learn</div>
+      <div class="pillar-name">Personae OS</div>
+      <div class="pillar-desc fr">Retours utilisateurs, personas dynamiques, release planning.</div>
+      <div class="pillar-desc en" style="display:none">User feedback, dynamic personas, release planning.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── MODULES ── -->
+<section id="modules">
+  <p class="section-label reveal fr">Les modules</p>
+  <p class="section-label reveal en" style="display:none">The modules</p>
+  <h2 class="section-title reveal fr">Quatre modules.<br>Un cycle continu.</h2>
+  <h2 class="section-title reveal en" style="display:none">Four modules.<br>One continuous cycle.</h2>
+
+  <div class="modules-grid">
+
+    <!-- Build OS -->
+    <div class="module-card build reveal">
+      <div class="module-header">
+        <div class="module-status status-beta"><div class="status-dot"></div>Beta</div>
+        <div class="module-role">Construire</div>
+        <div class="module-name">Build OS</div>
+        <div class="module-desc fr">Full stack — front, back, base de données — dans vos contraintes exactes. Accessible sans développeur, déployé en production réelle.</div>
+        <div class="module-desc en" style="display:none">Full stack — front, back, database — in your exact constraints. Accessible without a developer, shipped to real production.</div>
+        <ul class="module-features fr">
+          <li>Génération full stack dans votre DSM et vos conventions</li>
+          <li>Accessible à n'importe quel métier — aussi simple que Lovable</li>
+          <li>Multi-produit — un contexte isolé par produit</li>
+          <li>Portail développeur — code auditable en 1 clic</li>
+          <li>Intégration Jira bidirectionnelle + documentation parallèle</li>
+          <li>Déploiement réel — pas un prototype</li>
+        </ul>
+        <ul class="module-features en" style="display:none">
+          <li>Full stack generation in your DSM and conventions</li>
+          <li>Accessible to any business user — as simple as Lovable</li>
+          <li>Multi-product — one isolated context per product</li>
+          <li>Developer portal — code auditable in 1 click</li>
+          <li>Bidirectional Jira integration + parallel documentation</li>
+          <li>Real deployment — not a prototype</li>
+        </ul>
+      </div>
+      <div class="module-footer">
+        <a class="module-link" href="buildos.html">
+          <span class="fr-inline">Voir Build OS →</span>
+          <span class="en-inline" style="display:none">See Build OS →</span>
+        </a>
+        <span style="font-size:11px;color:var(--text-sec)" class="fr-inline">Disponible en Beta</span>
+        <span style="font-size:11px;color:var(--text-sec)" class="en-inline" style="display:none">Available in Beta</span>
+      </div>
+    </div>
+
+    <!-- Project OS -->
+    <div class="module-card project reveal reveal-delay-1">
+      <div class="module-header">
+        <div class="module-status status-beta"><div class="status-dot"></div>Beta</div>
+        <div class="module-role">Comprendre</div>
+        <div class="module-name">Project OS</div>
+        <div class="module-desc fr">Communiquez avec votre produit comme avec un expert qui le connaît parfaitement — ses choix, son historique, ses fonctionnalités.</div>
+        <div class="module-desc en" style="display:none">Communicate with your product like an expert who knows it perfectly — its decisions, history, and features.</div>
+        <ul class="module-features fr">
+          <li>Interrogez votre produit en langage naturel</li>
+          <li>Compréhension des choix de design et d'architecture</li>
+          <li>Historique des décisions produit accessible</li>
+          <li>Coordination des équipes autour du contexte produit</li>
+        </ul>
+        <ul class="module-features en" style="display:none">
+          <li>Query your product in natural language</li>
+          <li>Understanding of design and architecture decisions</li>
+          <li>Product decision history accessible</li>
+          <li>Team coordination around product context</li>
+        </ul>
+      </div>
+      <div class="module-footer">
+        <span style="font-size:11px;color:var(--text-sec)" class="fr-inline">Disponible en Beta</span>
+        <span style="font-size:11px;color:var(--text-sec)" class="en-inline" style="display:none">Available in Beta</span>
+      </div>
+    </div>
+
+    <!-- Health Care Product -->
+    <div class="module-card health reveal">
+      <div class="module-header">
+        <div class="module-status status-beta"><div class="status-dot"></div>Beta</div>
+        <div class="module-role">Auditer</div>
+        <div class="module-name">Health Care Product</div>
+        <div class="module-desc fr">Mesurez et améliorez la qualité de votre produit en continu — UX, accessibilité et éco-conception analysées automatiquement.</div>
+        <div class="module-desc en" style="display:none">Measure and improve your product quality continuously — UX, accessibility and eco-design analyzed automatically.</div>
+        <ul class="module-features fr">
+          <li>Audit UX automatisé à chaque release</li>
+          <li>Accessibilité — conformité RGAA / WCAG AA</li>
+          <li>Éco-conception — empreinte numérique mesurée</li>
+          <li>Recommandations actionnables générées</li>
+        </ul>
+        <ul class="module-features en" style="display:none">
+          <li>Automated UX audit at each release</li>
+          <li>Accessibility — RGAA / WCAG AA compliance</li>
+          <li>Eco-design — digital footprint measured</li>
+          <li>Actionable recommendations generated</li>
+        </ul>
+      </div>
+      <div class="module-footer">
+        <span style="font-size:11px;color:var(--text-sec)" class="fr-inline">Disponible en Beta</span>
+        <span style="font-size:11px;color:var(--text-sec)" class="en-inline" style="display:none">Available in Beta</span>
+      </div>
+    </div>
+
+    <!-- Personae OS -->
+    <div class="module-card personae reveal reveal-delay-1">
+      <div class="module-header">
+        <div class="module-status status-dev"><div class="status-dot"></div><span class="fr-inline">En développement</span><span class="en-inline" style="display:none">In development</span></div>
+        <div class="module-role">Apprendre</div>
+        <div class="module-name">Personae OS</div>
+        <div class="module-desc fr">Transformez les retours utilisateurs en personas dynamiques et en items de release planning — directement connecté à Atlassian.</div>
+        <div class="module-desc en" style="display:none">Transform user feedback into dynamic personas and release planning items — directly connected to Atlassian.</div>
+        <ul class="module-features fr">
+          <li>Collecte et analyse des retours utilisateurs</li>
+          <li>Personas dynamiques mis à jour en continu</li>
+          <li>Priorisation automatique des évolutions produit</li>
+          <li>Intégration Atlassian — release planning alimenté automatiquement</li>
+          <li>Boucle feedback → backlog → release fermée</li>
+        </ul>
+        <ul class="module-features en" style="display:none">
+          <li>User feedback collection and analysis</li>
+          <li>Dynamic personas updated continuously</li>
+          <li>Automatic product evolution prioritization</li>
+          <li>Atlassian integration — release planning fed automatically</li>
+          <li>Closed feedback → backlog → release loop</li>
+        </ul>
+      </div>
+      <div class="module-footer">
+        <span style="font-size:11px;color:#EA580C" class="fr-inline">En développement — disponible prochainement</span>
+        <span style="font-size:11px;color:#EA580C" class="en-inline" style="display:none">In development — coming soon</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── LOOP ── -->
+<section id="loop">
+  <p class="section-label reveal fr">Le cycle continu</p>
+  <p class="section-label reveal en" style="display:none">The continuous cycle</p>
+  <h2 class="section-title reveal fr" style="margin-bottom:48px">Un système vivant.<br>Pas une suite d'outils.</h2>
+  <h2 class="section-title reveal en" style="display:none;margin-bottom:48px">A living system.<br>Not a suite of tools.</h2>
+
+  <div class="loop-diagram reveal">
+
+    <div class="loop-step">
+      <div class="loop-icon" style="background:rgba(78,86,236,0.15);border-color:rgba(78,86,236,0.3)">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4E56EC" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+        </svg>
+      </div>
+      <div class="loop-step-name">Build OS</div>
+      <div class="loop-step-sub fr">Construit & déploie</div>
+      <div class="loop-step-sub en" style="display:none">Builds & ships</div>
+    </div>
+
+    <div class="loop-arrow">→</div>
+
+    <div class="loop-step">
+      <div class="loop-icon" style="background:rgba(160,166,248,0.15);border-color:rgba(160,166,248,0.3)">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#A0A6F8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/><path d="M11 8v6"/><path d="M8 11h6"/>
+        </svg>
+      </div>
+      <div class="loop-step-name">Project OS</div>
+      <div class="loop-step-sub fr">Comprend & documente</div>
+      <div class="loop-step-sub en" style="display:none">Understands & documents</div>
+    </div>
+
+    <div class="loop-arrow">→</div>
+
+    <div class="loop-step">
+      <div class="loop-icon" style="background:rgba(108,114,224,0.15);border-color:rgba(108,114,224,0.3)">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6C72E0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+        </svg>
+      </div>
+      <div class="loop-step-name">Health Care</div>
+      <div class="loop-step-sub fr">Audite & recommande</div>
+      <div class="loop-step-sub en" style="display:none">Audits & recommends</div>
+    </div>
+
+    <div class="loop-arrow">→</div>
+
+    <div class="loop-step">
+      <div class="loop-icon" style="background:rgba(251,146,60,0.15);border-color:rgba(251,146,60,0.3)">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FB923C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+      </div>
+      <div class="loop-step-name">Personae OS</div>
+      <div class="loop-step-sub fr">Apprend & priorise</div>
+      <div class="loop-step-sub en" style="display:none">Learns & prioritizes</div>
+    </div>
+
+    <div class="loop-arrow" style="transform:rotate(180deg)">←</div>
+
+    <div class="loop-step">
+      <div class="loop-icon" style="background:rgba(74,222,128,0.15);border-color:rgba(74,222,128,0.3)">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4ADE80" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M8 14h.01"/><path d="M12 14h4"/><path d="M8 18h.01"/><path d="M12 18h4"/>
+        </svg>
+      </div>
+      <div class="loop-step-name fr">Release Planning</div>
+      <div class="loop-step-name en" style="display:none">Release Planning</div>
+      <div class="loop-step-sub">Atlassian</div>
+    </div>
+
+  </div>
+
+  <p class="reveal fr" style="text-align:center;font-size:14px;font-weight:300;color:#606080;margin-top:48px;max-width:600px;margin-left:auto;margin-right:auto;line-height:1.7">
+    Chaque module alimente le suivant. Les retours utilisateurs remontent dans le release planning. Le release planning alimente Build OS. Le cycle ne s'arrête jamais.
+  </p>
+  <p class="reveal en" style="display:none;text-align:center;font-size:14px;font-weight:300;color:#606080;margin-top:48px;max-width:600px;margin-left:auto;margin-right:auto;line-height:1.7">
+    Each module feeds the next. User feedback flows into release planning. Release planning feeds Build OS. The cycle never stops.
+  </p>
+</section>
+
+<!-- ── ATLASSIAN ── -->
+<section id="atlassian">
+  <div class="atlassian-inner">
+    <div>
+      <p class="section-label reveal fr">Intégration Atlassian</p>
+      <p class="section-label reveal en" style="display:none">Atlassian Integration</p>
+      <h2 class="section-title reveal fr" style="margin-bottom:20px">Les retours utilisateurs<br>dans votre backlog.<br>Automatiquement.</h2>
+      <h2 class="section-title reveal en" style="display:none;margin-bottom:20px">User feedback<br>into your backlog.<br>Automatically.</h2>
+      <p class="reveal fr" style="font-size:15px;font-weight:300;color:#606080;line-height:1.7;margin-bottom:32px">
+        Personae OS analyse les retours utilisateurs, génère des personas dynamiques et alimente directement votre release planning Atlassian — avec les priorités déjà définies.
+      </p>
+      <p class="reveal en" style="display:none;font-size:15px;font-weight:300;color:#606080;line-height:1.7;margin-bottom:32px">
+        Personae OS analyzes user feedback, generates dynamic personas and feeds directly into your Atlassian release planning — with priorities already defined.
+      </p>
+      <div class="reveal" style="display:inline-flex;align-items:center;gap:8px;padding:8px 16px;background:rgba(234,88,12,0.08);border:1px solid rgba(234,88,12,0.2);border-radius:100px">
+        <div style="width:6px;height:6px;border-radius:50%;background:#EA580C;animation:pulse 2s infinite"></div>
+        <span style="font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#EA580C" class="fr-inline">Personae OS — En développement</span>
+        <span style="font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#EA580C" class="en-inline" style="display:none">Personae OS — In development</span>
+      </div>
+    </div>
+
+    <div class="atlassian-visual reveal reveal-delay-2">
+      <div class="atlassian-visual-title">
+        <span>📋</span>
+        <span class="fr-inline">Release Planning — Alimenté par Personae OS</span>
+        <span class="en-inline" style="display:none">Release Planning — Fed by Personae OS</span>
+      </div>
+      <div class="release-items">
+        <div class="release-item">
+          <div class="release-item-dot" style="background:var(--primary)"></div>
+          <div class="release-item-text fr">Simplifier le formulaire de saisie — 47 retours</div>
+          <div class="release-item-text en" style="display:none">Simplify input form — 47 feedbacks</div>
+          <span class="release-item-tag tag-ai">IA · P1</span>
+        </div>
+        <div class="release-item">
+          <div class="release-item-dot" style="background:var(--green)"></div>
+          <div class="release-item-text fr">Ajouter export PDF — demande fréquente</div>
+          <div class="release-item-text en" style="display:none">Add PDF export — frequent request</div>
+          <span class="release-item-tag tag-user">Utilisateurs · P2</span>
+        </div>
+        <div class="release-item">
+          <div class="release-item-dot" style="background:var(--primary-muted)"></div>
+          <div class="release-item-text fr">Dashboard mobile — persona Agent terrain</div>
+          <div class="release-item-text en" style="display:none">Mobile dashboard — Field agent persona</div>
+          <span class="release-item-tag tag-planned">Planifié · P3</span>
+        </div>
+        <div class="release-item" style="opacity:0.5">
+          <div class="release-item-dot" style="background:#C0C0D8"></div>
+          <div class="release-item-text fr">Intégration SSO — en attente IT</div>
+          <div class="release-item-text en" style="display:none">SSO integration — pending IT</div>
+          <span class="release-item-tag" style="background:#EEF0FD;color:#9090A8">Backlog</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── ROADMAP ── -->
+<section id="roadmap">
+  <p class="section-label reveal fr">Roadmap</p>
+  <p class="section-label reveal en" style="display:none">Roadmap</p>
+  <h2 class="section-title reveal fr" style="margin-bottom:48px">Ce qui arrive.</h2>
+  <h2 class="section-title reveal en" style="display:none;margin-bottom:48px">What's coming.</h2>
+
+  <div class="roadmap-items reveal">
+    <div class="roadmap-item">
+      <div class="roadmap-phase"><div class="roadmap-phase-label">Aujourd'hui</div></div>
+      <div class="roadmap-content">
+        <div class="roadmap-title fr">Build OS · Project OS · Health Care</div>
+        <div class="roadmap-title en" style="display:none">Build OS · Project OS · Health Care</div>
+        <div class="roadmap-desc fr">Les 3 premiers modules disponibles en Beta — opérationnels de manière indépendante.</div>
+        <div class="roadmap-desc en" style="display:none">The first 3 modules available in Beta — operationally independent.</div>
+        <span class="roadmap-status rs-now">Beta</span>
+      </div>
+    </div>
+    <div style="width:2px;height:16px;background:var(--border);margin-left:60px"></div>
+    <div class="roadmap-item">
+      <div class="roadmap-phase"><div class="roadmap-phase-label">En cours</div></div>
+      <div class="roadmap-content">
+        <div class="roadmap-title fr">Personae OS</div>
+        <div class="roadmap-title en" style="display:none">Personae OS</div>
+        <div class="roadmap-desc fr">Retours utilisateurs, personas dynamiques et intégration Atlassian release planning.</div>
+        <div class="roadmap-desc en" style="display:none">User feedback, dynamic personas and Atlassian release planning integration.</div>
+        <span class="roadmap-status rs-dev">En développement</span>
+      </div>
+    </div>
+    <div style="width:2px;height:16px;background:var(--border);margin-left:60px"></div>
+    <div class="roadmap-item">
+      <div class="roadroad-phase" style="background:var(--nav-active);padding:18px 24px;min-width:120px;display:flex;align-items:center;justify-content:center"><div class="roadmap-phase-label">Phase 3</div></div>
+      <div class="roadmap-content">
+        <div class="roadmap-title fr">Connexion des modules</div>
+        <div class="roadmap-title en" style="display:none">Module connection</div>
+        <div class="roadmap-desc fr">Les 4 modules interconnectés — partage de contexte, mémoire produit commune, données partagées.</div>
+        <div class="roadmap-desc en" style="display:none">All 4 modules interconnected — context sharing, common product memory, shared data.</div>
+        <span class="roadmap-status rs-next">Roadmap</span>
+      </div>
+    </div>
+    <div style="width:2px;height:16px;background:var(--border);margin-left:60px"></div>
+    <div class="roadmap-item">
+      <div class="roadroad-phase" style="background:var(--nav-active);padding:18px 24px;min-width:120px;display:flex;align-items:center;justify-content:center"><div class="roadmap-phase-label">Phase 4</div></div>
+      <div class="roadmap-content">
+        <div class="roadmap-title fr">Mémoire produit</div>
+        <div class="roadmap-title en" style="display:none">Product memory</div>
+        <div class="roadmap-desc fr">Un contexte persistant et partagé entre tous les modules — historique des décisions, versions, évolutions.</div>
+        <div class="roadmap-desc en" style="display:none">A persistent shared context across all modules — decision history, versions, evolutions.</div>
+        <span class="roadmap-status rs-next">Roadmap</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── ACCESS ── -->
+<section id="access">
+  <p class="section-label reveal fr">Formats d'accès</p>
+  <p class="section-label reveal en" style="display:none">Access formats</p>
+  <h2 class="section-title reveal fr" style="margin-bottom:48px">Trois façons de<br>déployer la plateforme.</h2>
+  <h2 class="section-title reveal en" style="display:none;margin-bottom:48px">Three ways to<br>deploy the platform.</h2>
+
+  <div class="access-grid reveal">
+    <div class="access-card">
+      <div class="access-num">Format 01</div>
+      <div class="access-name fr">Meilleurs modèles</div>
+      <div class="access-name en" style="display:none">Best models</div>
+      <div class="access-desc fr">La plateforme avec les meilleurs modèles du marché — veille continue, performances optimales.</div>
+      <div class="access-desc en" style="display:none">The platform with the best market models — continuous monitoring, optimal performance.</div>
+      <ul class="access-features fr">
+        <li>Accès aux modèles les plus performants</li>
+        <li>Mise à jour automatique</li>
+        <li>Idéal pour démarrer rapidement</li>
+      </ul>
+      <ul class="access-features en" style="display:none">
+        <li>Access to highest-performing models</li>
+        <li>Automatic updates</li>
+        <li>Ideal for a quick start</li>
+      </ul>
+    </div>
+    <div class="access-card featured">
+      <div class="access-num">Format 02</div>
+      <div class="access-name fr">Modèles client</div>
+      <div class="access-name en" style="display:none">Client models</div>
+      <div class="access-desc fr">Intégrez vos contrats LLM existants — Anthropic, Microsoft, Google et autres.</div>
+      <div class="access-desc en" style="display:none">Integrate your existing LLM contracts — Anthropic, Microsoft, Google and others.</div>
+      <ul class="access-features fr">
+        <li>Vos contrats LLM valorisés</li>
+        <li>Contrôle total sur le modèle</li>
+        <li>Cohérence avec votre stack IA</li>
+      </ul>
+      <ul class="access-features en" style="display:none">
+        <li>Your LLM contracts leveraged</li>
+        <li>Full model control</li>
+        <li>Consistency with your AI stack</li>
+      </ul>
+    </div>
+    <div class="access-card">
+      <div class="access-num">Format 03</div>
+      <div class="access-name fr">Open Source & Souverain</div>
+      <div class="access-name en" style="display:none">Open Source & Sovereign</div>
+      <div class="access-desc fr">Modèles open source — cloud souverain EU ou on-premise sur votre infrastructure.</div>
+      <div class="access-desc en" style="display:none">Open source models — EU sovereign cloud or on-premise on your infrastructure.</div>
+      <ul class="access-features fr">
+        <li>Zéro dépendance externe</li>
+        <li>Données dans votre environnement</li>
+        <li>Cloud souverain ou on-premise</li>
+      </ul>
+      <ul class="access-features en" style="display:none">
+        <li>Zero external dependency</li>
+        <li>Data in your environment</li>
+        <li>Sovereign cloud or on-premise</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA ── -->
+<section id="cta">
+  <div class="cta-ambient"></div>
+  <p class="cta-eyebrow fr">Commencer</p>
+  <p class="cta-eyebrow en" style="display:none">Get started</p>
+  <h2 class="cta-title fr reveal">Commencez par<br><span class="accent">Build OS.</span></h2>
+  <h2 class="cta-title en reveal" style="display:none">Start with<br><span class="accent">Build OS.</span></h2>
+  <p class="cta-sub fr reveal">Le module phare de l'AI Product Platform. Disponible en Beta dès maintenant.</p>
+  <p class="cta-sub en reveal" style="display:none">The flagship module of the AI Product Platform. Available in Beta right now.</p>
+  <div class="cta-actions reveal">
+    <a class="btn-primary" href="buildos.html#beta">
+      <span class="fr-inline">Rejoindre la Beta Build OS →</span>
+      <span class="en-inline" style="display:none">Join the Build OS Beta →</span>
+    </a>
+    <a class="btn-secondary" href="buildos.html">
+      <span class="fr-inline">En savoir plus sur Build OS</span>
+      <span class="en-inline" style="display:none">Learn more about Build OS</span>
+    </a>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div style="display:flex;align-items:center;gap:16px">
+    <span style="font-family:var(--font-display);font-weight:700;color:var(--text)">AI Product Platform</span>
+    <span style="color:var(--text-sec)">· by SKAPA</span>
+  </div>
+  <div style="display:flex;gap:24px;align-items:center">
+    <a href="buildos.html" style="color:#606080;text-decoration:none;font-size:12px;transition:color 0.2s" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='#606080'">Build OS</a>
+    <span style="color:var(--text-sec)">© 2025 SKAPA. <span class="fr-inline">Tous droits réservés.</span><span class="en-inline" style="display:none">All rights reserved.</span></span>
+  </div>
+</footer>
+
+<script>
+// Cursor
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursorRing');
+document.addEventListener('mousemove', e => {
+  cursor.style.left = e.clientX + 'px';
+  cursor.style.top = e.clientY + 'px';
+  setTimeout(() => {
+    ring.style.left = e.clientX + 'px';
+    ring.style.top = e.clientY + 'px';
+  }, 60);
+});
+document.querySelectorAll('a,button').forEach(el => {
+  el.addEventListener('mouseenter', () => { cursor.style.width='20px'; cursor.style.height='20px'; ring.style.width='52px'; ring.style.height='52px'; });
+  el.addEventListener('mouseleave', () => { cursor.style.width='12px'; cursor.style.height='12px'; ring.style.width='36px'; ring.style.height='36px'; });
+});
+
+// Nav scroll
+window.addEventListener('scroll', () => {
+  document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 40);
+});
+
+// Reveal
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+reveals.forEach(el => observer.observe(el));
+
+// Lang
+function setLang(lang) {
+  document.body.classList.toggle('lang-en', lang === 'en');
+  document.getElementById('btn-fr').classList.toggle('active', lang === 'fr');
+  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+  document.querySelectorAll('.fr:not(.fr-inline), .en:not(.en-inline)').forEach(el => {
+    if (el.classList.contains('fr')) el.style.display = lang === 'fr' ? '' : 'none';
+    if (el.classList.contains('en')) el.style.display = lang === 'en' ? '' : 'none';
+  });
+  document.querySelectorAll('.fr-inline').forEach(el => el.style.display = lang === 'fr' ? 'inline' : 'none');
+  document.querySelectorAll('.en-inline').forEach(el => el.style.display = lang === 'en' ? 'inline' : 'none');
+}
+</script>
+</body>
+</html>
